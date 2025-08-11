@@ -1,48 +1,39 @@
-const Header = (props) => {
-return <h1>{props.course}</h1>
+import { useState } from "react"
+
+const Button = (onSmash, text) => {
+    <button onClick={onSmash}>
+      {text}
+    </button>
 }
 
-const Content = (props) => {
-  return (
-    <div>
-      {props.parts.map((part, index) => (
-        <h2 key={index}>{part.name}</h2> // Mostramos el nombre directamente aquí
-      ))}
-    </div>
-   )
-  
-  
-}
 
-const Total  = (props) => {
-  return <h1>{props.course}</h1>
-}
+const Display = ({counter}) => {{counter}}
+
+
 const App = () => {
-  const course = 'Half Stack application development'
-  const parts = [
-    {
-      name: 'Fundamentals of React',
-      exercises: 10
-    },
-    {
-      name: 'Using props to pass data',
-      exercises: 7
-    },
-    {
-      name: 'State of a component',
-      exercises: 14
-    }
-  ]
+  const [counter,setCounter] = useState(0)
+
+  const increaseByOne = () => setCounter(counter + 1)
+  const decreaseByOne = () => setCounter(counter-1)
+  const setToZero = () => setCounter(0)
+
+  const handleClick = () => {
+    console.log('clicked')
+  }
 
 
-  
-  return (
-    <>
-      <Header course={course}/>
-      <Content parts={parts}/>
-      <Total parts={parts}/>
-    </>
-  )
+  return <div>
+    <Display counter={counter}/>
+    
+    <button onClick={increaseByOne}>
+      plus
+    </button>
+    <button onClick={setToZero}>
+      zero
+    </button>
+    
+  </div>
+
 }
 
 export default App
