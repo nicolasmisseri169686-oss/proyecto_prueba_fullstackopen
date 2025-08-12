@@ -1,39 +1,37 @@
 import { useState } from "react"
 
-const Button = (onSmash, text) => {
-    <button onClick={onSmash}>
-      {text}
-    </button>
-}
-
-
-const Display = ({ counter }) => <div>{counter}</div>
-
-
 const App = () => {
-  const [counter,setCounter] = useState(0)
+  const [clicks, setClicks] = useState({ left: 0, right: 0 })
 
-  const increaseByOne = () => setCounter(counter + 1)
-  const decreaseByOne = () => setCounter(counter-1)
-  const setToZero = () => setCounter(0)
-
-  const handleClick = () => {
-    console.log('clicked')
+  const handleLeftClick = () => {
+    const newClicks = {
+      ...clicks,
+      left: clicks.left + 1,
+      
+    }
+    setClicks(newClicks)
   }
 
+  const handleRightClick = () => {
+    const newClicks = {
+      ...clicks,
+      right: clicks.right + 1
+    }
+    setClicks(newClicks)
+  }
 
-  return <div>
-    <Display counter={counter}/>
-    
-    <button onClick={increaseByOne}>
-      plus
-    </button>
-    <button onClick={setToZero}>
-      zero
-    </button>
-    
-  </div>
-
+  return (
+    <div>
+      {clicks.left} 
+      <button onClick={handleLeftClick}>
+        left
+      </button>
+      <button onClick={handleRightClick}>
+        right
+      </button>
+      {clicks.right} 
+    </div>
+  )
 }
 
 export default App
