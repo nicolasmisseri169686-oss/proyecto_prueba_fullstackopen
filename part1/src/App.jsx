@@ -7,7 +7,7 @@ const Button = (onSmash, text) => {
 }
 
 
-const Display = ({counter}) => {{counter}}
+const Display = ({ counter }) => <div>{counter}</div>
 
 
 const App = () => {
