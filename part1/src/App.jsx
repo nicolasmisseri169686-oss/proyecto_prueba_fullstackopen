@@ -48,7 +48,7 @@ const App = () => {
 
   const total = good + neutral + bad;
   const score = good * 1 + neutral * 0 + bad * -1;
-  const average = total === 0 ? 0 : score / total;
+  const average = total === 0 ? 0 : good / total;
   const positive = total === 0 ? 0 : (good / total) * 100;
 
   return (
