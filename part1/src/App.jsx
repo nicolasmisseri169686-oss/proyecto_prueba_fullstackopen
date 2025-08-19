@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import "./index.css"
+import "./input.css";
 
 // Botón simple
 const Button = ({ handleClick, text }) => {
@@ -43,15 +42,14 @@ const App = () => {
   const [bad, setBad] = useState(0);
   const [reset, setReset] = useState(0);
 
-
   const handleGood = () => setGood(good + 1);
   const handleNeutral = () => setNeutral(neutral + 1);
   const handleBad = () => setBad(bad + 1);
   const handleReset = () => {
-  setGood(0);
-  setNeutral(0);
-  setBad(0);
-};
+    setGood(0);
+    setNeutral(0);
+    setBad(0);
+  };
 
   const total = good + neutral + bad;
   const score = good * 1 + neutral * 0 + bad * -1;
