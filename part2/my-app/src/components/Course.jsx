@@ -1,9 +1,7 @@
-const Course = ({course})=> {
+const Course = ({ course }) => {
   return (
-    
-    <li>
-      <h1>{course.name}</h1>
-      <h2>{course.exercises} - ejercicios</h2>
+    <li key={course.id}>
+      The course {course.name} content {course.exercises} exercises.
     </li>
   );
 };

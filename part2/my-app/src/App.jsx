@@ -1,3 +1,4 @@
+import "./App.css";
 import Course from "./components/Course";
 
 const App = () => {
@@ -51,19 +52,20 @@ const App = () => {
       <h1>Web development curriculum</h1>
 
       {courses.map((course) => {
-        const total = course.parts.reduce((sum , part) => sum + part.exercises, 0 );
+        const total = course.parts.reduce(
+          (sum, part) => sum + part.exercises,
+          0
+        );
 
         return (
-          <div key={course.id}>
-            <h2 key={course.id}>{course.name}</h2>
+          <div className="course-container" key={course.id}>
+            <h2>{course.name}</h2>
             <ul>
-              {course.parts.map((course) => (
-                <li key={course.id}>
-                  {course.name} , {course.exercises}
-                </li>
+              {course.parts.map((part) => (
+                <Course key={part.id} course={part} />
               ))}
 
-             <strong>El total de ejercicios es {total}</strong>
+              <strong>The total number of exercises is {total}</strong>
             </ul>
           </div>
         );
