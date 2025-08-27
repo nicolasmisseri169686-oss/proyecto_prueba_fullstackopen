@@ -4,6 +4,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import "./App.css";
+import personService from "./services/persons";
 
 function App() {
   const [persons, setPersons] = useState([]); // Aca tengo que pasar persons del dbjson
@@ -11,17 +12,14 @@ function App() {
   const [newPhone, setNewPhone] = useState(""); // input del telefono vacio
   const [filter, setFilter] = useState(""); // input del buscador vacio
 
-  const [notes, setNotes] = useState([]);
-
   // Effect-Hooks
 
   const hook = () => {
     // console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      // console.log("promise fulfilled");
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
-  }
+  };
 
   useEffect(hook, []);
 
@@ -29,19 +27,21 @@ function App() {
     event.preventDefault(); // evita que la pagina se recargue
 
     if (persons.some((person) => person.name === newName)) {
-      // chequeamos que la persona no exista
       alert(`${newName} is already added to phonebook`);
-    }
-    if (persons.some((person) => person.phone === newPhone)) {
-      alert(`${newPhone} is already added to phonebook`);
+    } else if (persons.some((person) => person.phone === newPhone)) {
+      alert(`${newPhone} is already added to phonebook`); // Comprobamos si existen los telefonos o los nombres
     } else {
-      // y si no existe continuamos con la creacion de la misma
-      const nameObject = { name: newName, phone: newPhone }; // creamos un objeto con el nombre
-      setPersons(persons.concat(nameObject)); // agregamos a la lista
-      setNewName("");
-      setNewPhone(""); // y limpiamos el input
+      const nameObject = { name: newName, phone: newPhone };
+
+      personService.create(nameObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewPhone("");
+      }); // Sino existen creamos el nombre y el telefono y lo mandamos al "back"
     }
   };
+
+  
 
   return (
     <div className="div1">
