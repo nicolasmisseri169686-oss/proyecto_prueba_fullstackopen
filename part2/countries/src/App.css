@@ -41,6 +41,9 @@ input:focus {
   outline: none;
 }
 
+h1 {
+  margin-bottom: 20px;
+}
 /* --- Country List --- */
 ul {
   list-style: none;
@@ -122,6 +125,10 @@ button:active {
   margin-top: 15px;
   max-width: 100%;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card-weather {
+  margin-top: 20px;
 }
 
 /* --- Weather Icon --- */

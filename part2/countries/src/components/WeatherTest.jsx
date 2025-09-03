@@ -23,7 +23,7 @@ const WeatherTest = ({ lat, lon }) => {
   if (!weather) return <p>⏳ Cargando clima...</p>;
 
   return (
-    <div>
+    <div className="card-weather">
       <h3>Clima en {weather.name}</h3>
       <p>🌡️ {weather.main?.temp} °C</p>
       <p>💧 Humedad: {weather.main?.humidity}%</p>
