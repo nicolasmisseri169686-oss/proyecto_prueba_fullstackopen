@@ -1,86 +1,144 @@
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-}
-
-input {
-  padding: 5px;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-ul {
-  list-style: none;
+/* --- Reset / Base --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
   padding: 0;
 }
 
-li {
-  margin: 5px 0;
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background: linear-gradient(to right, #f0f4f8, #e2e8f0);
+  color: #333;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
-img {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-button {
-  padding: 6px 12px;
-  margin-left: 10px;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  background-color: #007bff; /* azul estilo Bootstrap */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-button:hover {
-  background-color: #0056b3; /* azul más oscuro al pasar el mouse */
-}
-
-button:active {
-  transform: scale(0.97); /* pequeño efecto al hacer clic */
-}
-
+/* --- App container --- */
 .App {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 900px;
 }
 
+/* --- Input --- */
+input {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  width: 250px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
+  outline: none;
+}
+
+/* --- Country List --- */
+ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* --- Button --- */
+button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: linear-gradient(45deg, #3730a3, #4f46e5);
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* --- Country Card --- */
 .country-card {
   background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  width: 320px;
+  border-radius: 16px;
+  padding: 25px 20px;
+  margin-top: 25px;
+  width: 100%;
+  max-width: 400px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .country-card:hover {
-  transform: scale(1.02);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
 .country-card h2 {
-  margin-bottom: 10px;
-  font-size: 22px;
-  color: #333;
+  margin-bottom: 12px;
+  font-size: 24px;
+  color: #1e293b;
 }
 
 .country-card p {
-  margin: 6px 0;
+  margin: 8px 0;
   font-size: 16px;
-  color: #555;
+  color: #475569;
 }
 
 .country-card img {
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 15px;
   max-width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* --- Weather Icon --- */
+.country-card .weather-icon {
+  margin-top: 10px;
+  width: 80px;
+  height: 80px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 500px) {
+  input {
+    width: 100%;
+  }
+
+  .country-card {
+    width: 90%;
+    padding: 20px;
+  }
 }
