@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import "./App.css";
+import "./App.css"; // importacion de estilos
 import personService from "./services/persons";
 
 function App() {
@@ -37,24 +36,22 @@ function App() {
         const updatedPerson = { ...existingPerson, phone: newPhone };
 
         personService
-      .update(existingPerson.id, updatedPerson)
-      .then((returnedPerson) => {
-        setPersons(
-          persons.map((p) => (p.id !== existingPerson.id ? p : returnedPerson))
-        );
-        setNewName("");
-        setNewPhone("");
-      })
-      .catch((error) => {
-        alert(`El contacto '${newName}' ya fue eliminado del servidor`);
-        setPersons(persons.filter((p) => p.id !== existingPerson.id));
-      })
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((p) =>
+                p.id !== existingPerson.id ? p : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewPhone("");
+          })
+          .catch((error) => {
+            alert(`El contacto '${newName}' ya fue eliminado del servidor`);
+            setPersons(persons.filter((p) => p.id !== existingPerson.id));
+          });
       }
-    }
-
-    
-
-    else if (persons.some((person) => person.name === newName)) {
+    } else if (persons.some((person) => person.name === newName)) {
       alert(`${newName} is already added to phonebook`);
     } else if (persons.some((person) => person.phone === newPhone)) {
       alert(`${newPhone} is already added to phonebook`); // Comprobamos si existen los telefonos o los nombres
