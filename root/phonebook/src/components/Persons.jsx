@@ -5,7 +5,7 @@ const Persons = ({ persons, filter, handleDelete }) => {
       <ul>
         {" "}
         {persons
-          .filter((person) => person.name.includes(filter))
+          .filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()))
           .map((person, index) => (
             <li key={index}>
               {person.name}, {person.number} <br />

@@ -6,6 +6,7 @@ const Filter = ({ filter, setFilter }) => {
       <input
         value={filter}
         onChange={(event) => setFilter(event.target.value)}
+        placeholder="Search by name (case insensitive)"
       />{" "}
     </div>
   );
