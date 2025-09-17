@@ -4,8 +4,8 @@ import axios from "axios";
 // import.meta.env.MODE es una variable de entorno de Vite
 // import.meta.env.DEV también funciona (es true en desarrollo)
 const baseURL = import.meta.env.MODE === 'development'
-  ? 'http://localhost:3001/api/persons' // Desarrollo: URL completa
-  : '/api/persons'; // Producción: URL relativa (mismo dominio)
+  ? 'https://phonebook-backend-hmsj.onrender.com/api/persons' // ← URL de tu backend EN RENDER
+  : 'http://localhost:3001/api/persons'
 
 // frontend/src/services/persons.js
 const getAll = () => {
