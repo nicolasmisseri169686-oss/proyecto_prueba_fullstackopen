@@ -119,7 +119,11 @@ app.get(/^(?!\/api).*/, (req, res) => {
 // Las plataformas de despliegue (Render, Heroku, etc.) automatically set the PORT environment variable
 const PORT = process.env.PORT || 3001;
 
-// Pone el servidor a escuchar en el puerto especificado
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Solo inicia el servidor si no estamos en modo test
+if (process.env.NODE_ENV !== 'test') {
+  const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app; // ← IMPORTANTE para testing
