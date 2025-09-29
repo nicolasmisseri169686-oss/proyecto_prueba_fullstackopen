@@ -6,10 +6,11 @@ import "./App.css"; // importacion de estilos
 import personService from "./services/persons";
 
 function App() {
-  const [persons, setPersons] = useState([]); // Aca tengo que pasar persons del dbjson
-  const [newName, setNewName] = useState(""); // input del nombre vacio al inicio
-  const [newPhone, setNewPhone] = useState(""); // input del telefono vacio
-  const [filter, setFilter] = useState(""); // input del buscador vacio
+  const [persons, setPersons] = useState([]); // Lista de personas
+  const [newName, setNewName] = useState(""); // input del nombre
+  const [newPhone, setNewPhone] = useState(""); // input del telefono
+  const [filter, setFilter] = useState(""); // input del buscador
+  const [errorMessage, setErrorMessage] = useState(null); // Mensaje de error
 
   // Effect-Hooks
 
@@ -32,8 +33,7 @@ function App() {
   useEffect(hook, []);
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // evita que la pagina se recargue
-
+    event.preventDefault();
     const existingPerson = persons.find((p) => p.name === newName);
 
     if (existingPerson) {
@@ -43,7 +43,6 @@ function App() {
         )
       ) {
         const updatedPerson = { ...existingPerson, phone: newPhone };
-
         personService
           .update(existingPerson.id, updatedPerson)
           .then((returnedPerson) => {
@@ -56,22 +55,30 @@ function App() {
             setNewPhone("");
           })
           .catch((error) => {
-            alert(`El contacto '${newName}' ya fue eliminado del servidor`);
+            setErrorMessage(`El contacto '${newName}' ya fue eliminado del servidor`);
             setPersons(persons.filter((p) => p.id !== existingPerson.id));
+            setTimeout(() => setErrorMessage(null), 5000);
           });
       }
     } else if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
+      setErrorMessage(`${newName} is already added to phonebook`);
+      setTimeout(() => setErrorMessage(null), 5000);
     } else if (persons.some((person) => person.phone === newPhone)) {
-      alert(`${newPhone} is already added to phonebook`); // Comprobamos si existen los telefonos o los nombres
+      setErrorMessage(`${newPhone} is already added to phonebook`);
+      setTimeout(() => setErrorMessage(null), 5000);
     } else {
       const nameObject = { name: newName, number: newPhone };
-
-      personService.create(nameObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewPhone("");
-      }); // Sino existen creamos el nombre y el telefono y lo mandamos al "back"
+      personService.create(nameObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewPhone("");
+        })
+        .catch((error) => {
+          // Muestra el mensaje de error del backend
+          setErrorMessage(error.response?.data?.error || 'Error al agregar contacto');
+          setTimeout(() => setErrorMessage(null), 5000);
+        });
     }
   };
 
@@ -92,6 +99,8 @@ function App() {
   return (
     <div className="div1">
       <h1>PhoneBook</h1>
+      {/* Muestra el mensaje de error si existe */}
+      {errorMessage && <div className="error">{errorMessage}</div>}
       <Filter filter={filter} setFilter={setFilter} />
       <PersonForm
         newName={newName}

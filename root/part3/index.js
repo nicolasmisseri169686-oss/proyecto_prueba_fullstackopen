@@ -16,88 +16,75 @@ app.use(express.json()); // Parsea (interpreta) los cuerpos de las requests con 
 // Configuración de Morgan para logging personalizado
 // Creamos un token personalizado que muestra el body de las requests POST y PUT
 morgan.token("body", (req) => {
-  return req.method === "POST" || req.method === "PUT" 
-    ? JSON.stringify(req.body) 
+  return req.method === "POST" || req.method === "PUT"
+    ? JSON.stringify(req.body)
     : "";
 });
 
 // Usamos Morgan con el formato personalizado que incluye nuestro token "body"
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
 
-// ---------------- BASE DE DATOS EN MEMORIA (Temporal) ----------------
-// ATENCIÓN: Esta es una solución solo para desarrollo.
-// Los datos se perderán cuando el servidor se reinicie.
-// Para producción, DEBES usar una base de datos real como MongoDB.
+// ---------------- CONEXIÓN A MONGODB ----------------
+// Conexión a la base de datos (reemplaza la URI por la tuya en .env)
+const mongoose = require("mongoose"); // ORM para MongoDB
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/phonebook';
+mongoose.connect(url)
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch((error) => console.error('Error de conexión:', error.message));
 
-let persons = [
-  { id: 1, name: "Arto Hellas", number: "040-123456" },
-  { id: 2, name: "Ada Lovelace", number: "39-44-5323523" },
-  { id: 3, name: "Dan Abramov", number: "12-43-234345" },
-  { id: 4, name: "Mary Poppendieck", number: "39-23-6423122" },
-];
+// Importa el modelo Person definido con validaciones
+const Person = require('./models/person');
 
 // ---------------- RUTAS DE LA API (RESTful) ----------------
 
-// GET /api/persons - Obtiene todas las entradas de la agenda
-app.get("/api/persons", (req, res) => {
-  res.json(persons); // Devuelve el array completo de personas en formato JSON
+// GET /api/persons - Obtiene todas las personas desde MongoDB
+app.get("/api/persons", (req, res, next) => {
+  Person.find({})
+    .then(persons => res.json(persons))
+    .catch(error => next(error));
 });
 
 // GET /info - Muestra información general (cantidad de registros + fecha actual)
-app.get("/info", (req, res) => {
-  const date = new Date();
-  res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+app.get("/info", (req, res, next) => {
+  Person.countDocuments({})
+    .then(count => {
+      const date = new Date();
+      res.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`);
+    })
+    .catch(error => next(error));
 });
 
 // GET /api/persons/:id - Obtiene una persona específica por su ID
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id); // Convierte el parámetro de string a número
-  const person = persons.find((p) => p.id === id); // Busca la persona por ID
-  
-  if (person) {
-    res.json(person); // Si la encuentra, la devuelve
-  } else {
-    res.status(404).end(); // Si no la encuentra, devuelve error 404 Not Found
-  }
+app.get("/api/persons/:id", (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch(error => next(error));
 });
 
 // DELETE /api/persons/:id - Elimina una persona por su ID
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((p) => p.id !== id); // Filtra el array, removiendo la persona con el ID especificado
-  res.status(204).end(); // Responde con 204 No Content (éxito pero sin contenido para devolver)
+app.delete("/api/persons/:id", (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then(() => res.status(204).end())
+    .catch(error => next(error));
 });
 
 // POST /api/persons - Crea una nueva entrada en la agenda
-app.post("/api/persons", (req, res) => {
-  const body = req.body; // Los datos vienen en el cuerpo de la request
+app.post("/api/persons", (req, res, next) => {
+  const body = req.body;
+  const person = new Person({
+    name: body.name,
+    number: body.number
+  });
 
-  // Validaciones de los datos recibidos
-  if (!body.name) {
-    return res.status(400).json({ error: "name missing" }); // 400 Bad Request
-  }
-  if (!body.number) {
-    return res.status(400).json({ error: "number missing" });
-  }
-  if (persons.some((p) => p.name === body.name)) {
-    return res.status(400).json({ error: "name must be unique" });
-  }
-
-  // Generación de un ID aleatorio (solución temporal)
-  const id = Math.floor(Math.random() * 1000000);
-  
-  // Creación del nuevo objeto persona
-  const person = { 
-    id, 
-    name: body.name, 
-    number: body.number 
-  };
-
-  // Agrega la nueva persona al array
-  persons = persons.concat(person);
-  
-  // Devuelve la nueva persona creada con código 200 OK
-  res.json(person);
+  person.save()
+    .then(savedPerson => res.json(savedPerson))
+    .catch(error => next(error)); // Pasa el error al middleware de manejo de errores
 });
 
 // ---------------- SERVIR APLICACIÓN FRONTEND (React/Vue/etc) ----------------
@@ -115,15 +102,26 @@ app.get(/^(?!\/api).*/, (req, res) => {
 
 // ---------------- INICIO DEL SERVIDOR ----------------
 
-// Define el puerto: usa el puerto de la variable de entorno PORT o el 3001 por defecto
-// Las plataformas de despliegue (Render, Heroku, etc.) automatically set the PORT environment variable
-const PORT = process.env.PORT || 3001;
+// ---------------- MANEJO DE ERRORES DE VALIDACIÓN ----------------
+// Middleware para manejar errores de Mongoose (validación, cast, etc.)
+app.use((error, req, res, next) => {
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message });
+  }
+  if (error.name === 'CastError') {
+    return res.status(400).json({ error: 'malformatted id' });
+  }
+  next(error);
+});
 
-// Solo inicia el servidor si no estamos en modo test
+// ---------------- INICIO DEL SERVIDOR ----------------
+const PORT = process.env.PORT || 3001;
 if (process.env.NODE_ENV !== 'test') {
-  const server = app.listen(PORT, () => {
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 }
 
 module.exports = app; // ← IMPORTANTE para testing
+
+/* Eliminado código duplicado de conexión a mongoose y declaración de Person */
